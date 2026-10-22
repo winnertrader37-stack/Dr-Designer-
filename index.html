@@ -1,0 +1,311 @@
+<!DOCTYPE html><html lang="om"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover"><title>Naol 3D Design Pro</title><style>
+:root{--bg:#12121a;--p:#1b1b27;--p2:#262636;--l:#34344a;--t:#eceaf5;--m:#9a98b3;--a:#8b5cf6;--a2:#f59e0b;--d:#ef4444;color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--t);font:14px system-ui,sans-serif;overflow:hidden}
+body{display:flex;flex-direction:column;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+header{display:flex;gap:6px;align-items:center;padding:6px 8px;background:var(--p);border-bottom:1px solid var(--l)}
+header h1{flex:1;margin:0;font-size:16px}header h1 span{color:var(--a2)}
+.ib,.btn{background:var(--p2);border:1px solid var(--l);color:var(--t);border-radius:9px;padding:8px;cursor:pointer;text-align:center;font-size:13px}
+.btn.pri{background:var(--a)}.btn.w{background:var(--a2);color:#222;font-weight:700}.btn.d{background:#3a1a1f;border-color:var(--d)}.on{background:var(--a)!important}
+#view{flex:1;position:relative;min-height:120px}#c{width:100%;height:100%;display:block;touch-action:none}
+#rec{position:absolute;right:8px;top:8px;background:var(--d);padding:4px 10px;border-radius:20px;font-weight:700;display:none}
+#tools{position:absolute;left:0;right:0;bottom:6px;display:flex;flex-wrap:wrap;justify-content:center;gap:5px}
+#tools button{background:#1b1b27e6;border:1px solid var(--l);color:var(--t);border-radius:9px;padding:7px 10px;font-size:13px}
+#sheet{background:var(--p);border-top:1px solid var(--l);height:42vh;display:flex;flex-direction:column}#sheet.min{height:auto}#sheet.min #panels{display:none}
+#tabs{display:flex;overflow-x:auto;gap:4px;padding:6px;scrollbar-width:none}
+#tabs button{flex:0 0 auto;background:0;border:0;color:var(--m);padding:8px 11px;border-radius:9px;font-weight:600;white-space:nowrap}#tabs button.on{color:#fff}
+#panels{flex:1;overflow-y:auto;padding:4px 12px 14px}.pn{display:none}.pn.on{display:block}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:8px}.grid .btn b{display:block;font-size:22px}
+.row{display:flex;align-items:center;gap:8px;margin:7px 0}.row label{flex:0 0 84px;font-size:12.5px;color:var(--m)}.row input[type=range]{flex:1;accent-color:var(--a)}.row output{flex:0 0 42px;font-size:12px;text-align:right;color:var(--m)}
+input[type=color]{width:42px;height:32px;border:1px solid var(--l);background:0;border-radius:8px}
+input[type=text],select{flex:1;min-width:0;background:var(--p2);border:1px solid var(--l);color:var(--t);padding:8px;border-radius:9px;font-size:14px}
+h3{font-size:12px;text-transform:uppercase;letter-spacing:.8px;color:var(--a2);margin:14px 0 6px}.two{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}.note{font-size:12px;color:var(--m)}
+.md{position:fixed;inset:0;background:#000c;display:none;align-items:center;justify-content:center;z-index:50;padding:16px}.md .box{background:var(--p);border:1px solid var(--l);border-radius:14px;padding:14px;max-width:520px;width:100%}.md video{width:100%;border-radius:10px;max-height:55vh;background:#000}
+#toast{position:fixed;left:50%;top:70px;transform:translateX(-50%);background:#000d;padding:8px 14px;border-radius:20px;opacity:0;transition:.25s;pointer-events:none;z-index:60}#toast.on{opacity:1;background:#000d!important}
+</style></head><body>
+<header><h1>Naol <span>3D</span> Pro</h1><button class="ib" id="hN">＋ Haaraa</button><button class="ib" id="hU">↶</button><button class="ib" id="hR">↷</button><button class="ib" id="hM">⇅</button></header>
+<div id="view"><canvas id="c"></canvas><div id="rec"></div>
+<div id="tools"><button id="tPlay">▶ Sochii</button><button id="tSnap">▦ Snap</button><button id="tV">⬍ Olii</button><button id="tDup">⧉</button><button id="tDel">🗑</button></div></div>
+<div id="sheet"><div id="tabs"><button data-t="tpl" class="on">🧩 Fakkeenya</button><button data-t="add">➕ Dabali</button><button data-t="edit">✏️ Gulaali</button><button data-t="col">🎨 Halluu</button><button data-t="mov">🏎️ Sochii</button><button data-t="vid">🎬 Viidiyoo</button><button data-t="logo">🏷️ Logo</button><button data-t="env">💡 Naannoo</button><button data-t="out">⬇️ Buusi</button></div>
+<div id="panels">
+<div class="pn on" id="p-tpl"><h3>Fakkeenya filadhu (26)</h3><div class="grid" id="tG"></div><p class="note">Fakkeenya filachuun halluu, qaama fi logo jijjiiruu dandeessa. Project ofumaa save ta’a.</p></div>
+<div class="pn" id="p-add"><h3>Bu’uuraa</h3><div class="grid" id="aB"></div><h3>Pro designer (20)</h3><div class="grid" id="aP"></div></div>
+<div class="pn" id="p-edit"><div class="row"><label>Qaama</label><select id="pl"></select></div>
+<div class="two"><button class="btn" id="bDup">⧉ Kophee</button><button class="btn" id="bMir">⇋ Mirror</button><button class="btn" id="bGr">⤓ Lafa irra kaa’i</button><button class="btn d" id="bDel">🗑 Haqi</button></div>
+<h3>Bakka</h3><div id="sP"></div><h3>Geeddarsa °</h3><div id="sR"></div><h3>Guddina</h3><div class="row"><label>Wal-qixa</label><input type="checkbox" id="lk" checked></div><div id="sS"></div>
+<h3>Mul’ata</h3><div class="row"><label>Halluu</label><input type="color" id="mC"></div><div class="row"><label>Sibiila</label><input type="range" id="mM" min="0" max="1" step=".01"><output></output></div><div class="row"><label>Dagaaga</label><input type="range" id="mR" min="0" max="1" step=".01"><output></output></div><div class="row"><label>Iftoomina</label><input type="range" id="mO" min=".1" max="1" step=".01"><output></output></div></div>
+<div class="pn" id="p-col"><h3>Halluu gareedhaan</h3>
+<div class="row"><label>Qaama</label><input type="color" data-role="body" value="#d32f2f"></div><div class="row"><label>Galaasii</label><input type="color" data-role="glass" value="#9ecbff"></div><div class="row"><label>Faayaa</label><input type="color" data-role="accent" value="#cfd3da"></div><div class="row"><label>Taayirii</label><input type="color" data-role="wheel" value="#222222"></div><div class="row"><label>Ifa</label><input type="color" data-role="light" value="#fff4b0"></div><div class="row"><label>Xixiqqaa</label><input type="color" data-role="detail" value="#444444"></div>
+<h3>Bifa mul’ataa (filatame ykn qaama guddaa)</h3><div class="grid" id="fin"></div><h3>Halluu qophaa’e</h3><div class="grid" id="sw"></div></div>
+<div class="pn" id="p-mov"><h3>Sochii (konkolaata, roogeettii, xiyyaara…)</h3><div class="row"><label>Akkaataa</label><select id="amode"><option value="none">Hin socho’u</option><option value="drive">Konkolaataa (naanna’a)</option><option value="fly">Xiyyaara/Helikoptarii</option><option value="rocket">Roogeettii (ol bahuu)</option><option value="sail">Doonii/Sub</option><option value="spin">Of-naanna’uu</option><option value="bob">Ol-gad (UFO/Drone)</option><option value="idle">Kutaan qofa (muka bubbee)</option></select></div>
+<div class="row"><label>Saffisa</label><input type="range" id="asp" min=".2" max="3" step=".05" value="1"><output></output></div><div class="row"><label>Kaameraan hordofu</label><input type="checkbox" id="afl" checked></div>
+<div class="two"><button class="btn w" id="aGo">▶ Eegali / ⏸</button><button class="btn" id="aRs">⟲ Deebisi</button></div><p class="note">Yeroo socho’u ilaalaa “Gulaali” keessatti qaama kamiyyuu sirreessuu dandeessa. Meeshaa tuqxe sochiin yeroo muraasaaf dhaabbata.</p></div>
+<div class="pn" id="p-vid"><h3>🎬 Viidiyoo cinematic (hanga daqiiqaa 1)</h3>
+<div class="row"><label>Yeroo</label><select id="vDur"><option value="10">10s</option><option value="20">20s</option><option value="30" selected>30s</option><option value="45">45s</option><option value="60">60s</option></select></div>
+<div class="row"><label>Bifa</label><select id="vSty"><option value="cin">Cinematic (naanna’uu+zoom)</option><option value="fast">Saffisaa (naanna’uu baay’ee)</option><option value="hero">Hero (gadii→dhi’aachuu)</option><option value="calm">Suuta calaqqisaa</option></select></div>
+<div class="row"><label>Saffisa</label><select id="vSp"><option value=".5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></div>
+<div class="row"><label>Kallattii</label><select id="vDir"><option value="1">Bitaa →</option><option value="-1">← Mirga</option></select></div>
+<div class="row"><label>Filter</label><select id="vFl"><option value="0">Hin jiru</option><option value="1">Warm</option><option value="2">Cool</option><option value="3">Gurraacha/adii</option><option value="4">Vivid</option><option value="5">Vintage</option></select></div>
+<div class="row"><label>Titile</label><input type="text" id="vTx" maxlength="30" placeholder="Barreeffama (filannoo)"></div>
+<div class="row"><label>Cinema</label><input type="checkbox" id="vLb" checked><span class="note">Letterbox+vignette+fade</span></div>
+<div class="row"><label>Sochii</label><input type="checkbox" id="vAn" checked><span class="note">Sochii waliin waraabi</span></div>
+<div class="row"><label>Fit</label><input type="checkbox" id="vFit" checked><span class="note">Jalqaba hunda mul’isi</span></div>
+<div class="row"><label>Qulqullina</label><select id="vQ"><option value="6000000">Gaarii</option><option value="12000000" selected>Olaanaa</option><option value="20000000">Baay’ee olaanaa</option></select></div>
+<h3>🔊 Sagalee (30)</h3><div class="row"><select id="vSnd"></select></div><div class="row"><label>Ol-gad</label><input type="range" id="vVol" min=".05" max="1" step=".05" value=".5"></div>
+<div class="two"><button class="btn" id="vPv">▶ Dhaggeeffadhu</button><button class="btn" id="vPs">■ Callisi</button><button class="btn w" id="vGo">● Eegali</button><button class="btn d" id="vSt">■ Dhaabi</button></div></div>
+<div class="pn" id="p-logo"><h3>Logo barreeffamaa</h3><div class="row"><label>Barreeffama</label><input type="text" id="lT" value="NAOL" maxlength="20"></div><div class="row"><label>Halluu</label><input type="color" id="lC" value="#ffffff"></div><div class="two"><button class="btn pri" id="lAdd">➕ Dabali</button><button class="btn" id="lUp">↻ Haaromsi</button></div></div>
+<div class="pn" id="p-env"><h3>Ifa</h3><div class="grid" id="lt"></div><h3>Duubbee</h3><div class="row"><label>Duubbee</label><input type="color" id="bg" value="#1a1a26"></div><div class="row"><label>Lafa</label><input type="checkbox" id="fl" checked><input type="color" id="flC" value="#2a2a3a"></div><div class="row"><label>Grid</label><input type="checkbox" id="gr" checked></div><div class="row"><label>Wireframe</label><input type="checkbox" id="wf"></div><div class="row"><label>Gaaddidduu</label><input type="checkbox" id="sh" checked></div>
+<div class="row"><label>Ifa guddaa</label><input type="range" id="sI" min="0" max="4" step=".05" value="1.6"><output></output></div><div class="row"><label>Calaqqee</label><input type="range" id="eI" min="0" max="3" step=".05" value="1"><output></output></div>
+<h3>Kaameraa</h3><div class="grid"><div class="btn" data-cam="front">Duraa</div><div class="btn" data-cam="side">Cinaa</div><div class="btn" data-cam="back">Duubaa</div><div class="btn" data-cam="top">Olii</div><div class="btn" data-cam="iso">3/4</div><div class="btn" data-cam="fit">Hunda</div></div><div class="row"><label>Of-naanna’uu</label><input type="checkbox" id="spin"></div></div>
+<div class="pn" id="p-out"><button class="btn pri" id="oPng" style="width:100%">📸 PNG buusi</button><div class="two"><button class="btn" id="oObj">OBJ (3D)</button><button class="btn" id="oJ">Project .json</button><button class="btn" id="oL">Project bani</button><button class="btn" id="oPrev">↺ Project duraanii</button></div><input type="file" id="oF" accept=".json" style="display:none"><button class="btn d" id="oClr" style="width:100%">Hunda haqi</button><p class="note">Project ofumaa bilbila/browser keessatti save ta’a.</p></div>
+</div></div>
+<div class="md" id="m2"><div class="box"><h3 style="margin-top:0">Project duraan jira</h3><p id="m2t"></p><div class="two"><button class="btn pri" id="m2r">▶ Itti fufi</button><button class="btn w" id="m2n">＋ Haaraa jalqabi</button></div></div></div>
+<div class="md" id="mv"><div class="box"><video id="vv" controls loop playsinline autoplay></video><div class="two"><a class="btn pri" id="vd" download="naol-3d.webm" style="text-decoration:none">⬇️ Buusi</a><button class="btn" id="vc">Cufi</button></div></div></div>
+<div id="toast"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(()=>{"use strict";
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],PI=Math.PI;
+const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('on'),1800)};
+if(!window.THREE){document.body.innerHTML='<p style="padding:20px">Three.js hin fe’amne. Interneetii ilaali.</p>';return}
+const G=THREE;addEventListener('error',e=>toast('Dogoggora: '+e.message));
+const cv=$('#c'),view=$('#view'),R=new G.WebGLRenderer({canvas:cv,antialias:true,preserveDrawingBuffer:true});
+R.setPixelRatio(Math.min(devicePixelRatio||1,2));R.outputEncoding=G.sRGBEncoding;R.toneMapping=G.ACESFilmicToneMapping;R.toneMappingExposure=1.1;R.shadowMap.enabled=true;R.shadowMap.type=G.PCFSoftShadowMap;R.setClearColor('#1a1a26',1);
+const scene=new G.Scene();scene.fog=new G.Fog('#1a1a26',25,70);const cam=new G.PerspectiveCamera(45,1,.1,200);
+(()=>{const pm=new G.PMREMGenerator(R),es=new G.Scene();es.add(new G.Mesh(new G.BoxGeometry(30,30,30),new G.MeshBasicMaterial({color:new G.Color(.18,.19,.25),side:G.BackSide})));
+[[0,14,0,14,.3,14,5],[10,10,10,3,.3,3,8],[-10,8,-10,3,.3,3,6],[14,5,0,.3,8,14,3],[-14,5,0,.3,8,14,2.2],[0,5,14,14,8,.3,3]].forEach(a=>{const m=new G.Mesh(new G.BoxGeometry(a[3],a[4],a[5]),new G.MeshBasicMaterial({color:new G.Color().setScalar(a[6])}));m.position.set(a[0],a[1],a[2]);es.add(m)});scene.environment=pm.fromScene(es,.02).texture;pm.dispose()})();
+const hemi=new G.HemisphereLight(0xffffff,0x444466,.35),sun=new G.DirectionalLight(0xffffff,1.6),fillL=new G.DirectionalLight(0xaac4ff,.5);scene.add(hemi,sun,fillL);
+sun.position.set(6,10,7);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-12,right:12,top:12,bottom:-12,near:1,far:40});sun.shadow.bias=-.0004;sun.shadow.normalBias=.02;fillL.position.set(-7,4,-3);
+const floor=new G.Mesh(new G.PlaneGeometry(80,80),new G.MeshStandardMaterial({color:'#2a2a3a',roughness:.55,metalness:.15}));floor.rotation.x=-PI/2;floor.receiveShadow=true;scene.add(floor);
+const grid=new G.GridHelper(40,40,0x6a6a8a,0x3a3a50);grid.position.y=.002;grid.material.transparent=true;grid.material.opacity=.4;scene.add(grid);
+const world=new G.Group();world.rotation.order='YXZ';scene.add(world);
+/* camera */
+const tg=new G.Vector3(0,.9,0);let az=.7,el=.3,dist=9;
+function camUpd(){if(!isFinite(dist+az+el))az=.7,el=.3,dist=9;el=Math.max(.03,Math.min(1.5,el));dist=Math.max(1,Math.min(60,dist));cam.position.set(tg.x+dist*Math.cos(el)*Math.sin(az),tg.y+dist*Math.sin(el),tg.z+dist*Math.cos(el)*Math.cos(az));cam.lookAt(tg)}
+function resize(){const w=view.clientWidth,h=view.clientHeight;if(!w||!h)return;R.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()}
+new ResizeObserver(resize).observe(view);
+const bounds=()=>{const b=new G.Box3();world.children.forEach(m=>{if(m.userData.role!=='logo')b.expandByObject(m)});return b};
+function fitView(){const b=bounds();if(b.isEmpty())return;const c=b.getCenter(new G.Vector3()),r=b.getSize(new G.Vector3()).length()/2;if(!isFinite(r+c.x+c.y+c.z))return;tg.copy(c);dist=Math.max(3,r/Math.sin(G.MathUtils.degToRad(cam.fov/2))*.95)}
+/* geometry */
+const ex=(s,d,b)=>{const g=new G.ExtrudeGeometry(s,{depth:d,bevelEnabled:!!b,bevelSize:b||0,bevelThickness:b||0,bevelSegments:3,curveSegments:14});g.translate(0,0,-d/2);return g};
+const poly=p=>{const s=new G.Shape();p.forEach((q,i)=>i?s.lineTo(q[0],q[1]):s.moveTo(q[0],q[1]));s.closePath();return s};
+const LA={vase:[[.01,0],[.45,0],[.6,.2],[.62,.5],[.4,.95],[.3,1.15],[.38,1.35],[.5,1.45],[.44,1.5],[.28,1.4]],cup:[[.01,0],[.4,0],[.45,.05],[.5,.9],[.44,.9],[.38,.1],[.01,.1]],bottle:[[.01,0],[.4,0],[.45,.1],[.45,1.1],[.3,1.4],[.15,1.55],[.15,1.8],[.18,1.85],[.01,1.85]],bowl:[[.01,0],[.3,0],[.6,.15],[.85,.5],[.9,.6],[.85,.6],[.55,.25],[.01,.22]],column:[[.01,0],[.5,0],[.5,.1],[.3,.2],[.3,1.8],[.5,1.9],[.5,2],[.01,2]],goblet:[[.01,0],[.35,0],[.35,.08],[.08,.22],[.08,.6],[.3,.7],[.6,1.1],[.62,1.5],[.55,1.5],[.5,1.1],[.01,.8]]};
+const lathe=(p,k,r)=>{const g=new G.LatheGeometry(p.map(q=>new G.Vector2(q[0]*k,q[1]*k)),40);g.computeBoundingBox();g.translate(0,-(g.boundingBox.min.y+g.boundingBox.max.y)/2,0);return g};
+const GF={box:a=>new G.BoxGeometry(...a),sphere:a=>new G.SphereGeometry(a[0],32,20),hemi:a=>new G.SphereGeometry(a[0],32,16,0,PI*2,0,PI/2),cyl:a=>new G.CylinderGeometry(a[0],a[1],a[2],a[3]||32),cone:a=>new G.ConeGeometry(a[0],a[1],a[2]||32),pyr:a=>{const c=new G.ConeGeometry(a[0],a[1],4);c.rotateY(PI/4);return c},torus:a=>new G.TorusGeometry(a[0],a[1],20,48),plane:a=>new G.PlaneGeometry(a[0],a[1]),octa:a=>new G.OctahedronGeometry(a[0]),icosa:a=>new G.IcosahedronGeometry(a[0],1),hex:a=>new G.CylinderGeometry(a[0],a[0],a[1],6),knot:a=>new G.TorusKnotGeometry(a[0],a[1],120,16),plight:()=>new G.SphereGeometry(.14,16,12),
+capsule:a=>{const r=a[0],l=a[1],p=[];for(let i=0;i<=8;i++){const t=i/8*PI/2;p.push([Math.sin(t)*r+.001,-l/2-Math.cos(t)*r])}for(let i=0;i<=8;i++){const t=i/8*PI/2;p.push([Math.cos(t)*r+.001,l/2+Math.sin(t)*r])}return lathe(p,1)},
+prism:a=>ex(poly([[-a[0]/2,0],[a[0]/2,0],[0,a[1]]]),a[2]),wedge:a=>ex(poly([[-a[0]/2,0],[a[0]/2,0],[a[0]/2,a[1]]]),a[2]),
+star:a=>{const p=[];for(let i=0;i<10;i++){const r=i%2?a[1]:a[0],t=i/10*PI*2+PI/2;p.push([Math.cos(t)*r,Math.sin(t)*r])}return ex(poly(p),a[2],.03)},
+cross:a=>{const w=a[0]/2,t=a[1]/2;return ex(poly([[-t,w],[t,w],[t,t],[w,t],[w,-t],[t,-t],[t,-w],[-t,-w],[-t,-t],[-w,-t],[-w,t],[-t,t]]),a[2],.02)},
+heart:a=>{const s=new G.Shape();s.moveTo(25,25);s.bezierCurveTo(25,25,20,0,0,0);s.bezierCurveTo(-30,0,-30,35,-30,35);s.bezierCurveTo(-30,55,-10,77,25,95);s.bezierCurveTo(60,77,80,55,80,35);s.bezierCurveTo(80,35,80,0,50,0);s.bezierCurveTo(35,0,25,25,25,25);const h=new G.ExtrudeGeometry(s,{depth:30,bevelEnabled:true,bevelSize:4,bevelThickness:4,bevelSegments:3});h.center();h.scale(a[0]/90,a[0]/90,a[0]/90);h.rotateZ(PI);return h},
+gear:a=>{const n=a[1],p=[];for(let i=0;i<n;i++){const t=i/n*2*PI;[[0,1],[.25,1],[.5,.78],[.75,.78]].forEach(q=>{const an=t+q[0]*2*PI/n;p.push([Math.cos(an)*a[0]*q[1],Math.sin(an)*a[0]*q[1]])})}const s=poly(p),h=new G.Path();h.absarc(0,0,a[0]*.25,0,PI*2,true);s.holes.push(h);return ex(s,a[2],.02)},
+spline:a=>{const c=new G.CatmullRomCurve3(a[0].map(p=>new G.Vector3(p[0],p[1],0)),true,'centripetal'),b=a[2]||0;return ex(new G.Shape(c.getPoints(120).map(p=>new G.Vector2(p.x,p.y))),Math.max(.001,a[1]-2*b),b)},
+rbox:a=>{const[w,h,d,r]=a,b=a[4]??Math.min(.035,d/3,w/3,h/3),iw=w-2*b,ih=h-2*b,id=Math.max(.001,d-2*b),rr=Math.max(.001,Math.min(r-b,iw/2-.001,ih/2-.001)),x=-iw/2,y=-ih/2,s=new G.Shape();s.moveTo(x+rr,y);s.lineTo(x+iw-rr,y);s.quadraticCurveTo(x+iw,y,x+iw,y+rr);s.lineTo(x+iw,y+ih-rr);s.quadraticCurveTo(x+iw,y+ih,x+iw-rr,y+ih);s.lineTo(x+rr,y+ih);s.quadraticCurveTo(x,y+ih,x,y+ih-rr);s.lineTo(x,y+rr);s.quadraticCurveTo(x,y,x+rr,y);return ex(s,id,b)},
+ring:a=>{const s=new G.Shape();s.absarc(0,0,a[1],0,PI*2);const h=new G.Path();h.absarc(0,0,a[0],0,PI*2,true);s.holes.push(h);return ex(s,a[2],.02)},
+helix:a=>{const p=[];for(let i=0;i<=60;i++)p.push(new G.Vector3(Math.cos(i*.4)*a[0],i*a[1]/60*4,Math.sin(i*.4)*a[0]));const g=new G.TubeGeometry(new G.CatmullRomCurve3(p),160,a[2],8);g.center();return g},
+stairs:a=>{const[n,h,d,w]=a,p=[[0,0]];for(let i=0;i<n;i++)p.push([i*d,(i+1)*h],[(i+1)*d,(i+1)*h]);p.push([n*d,0]);const g=ex(poly(p),w);g.center();return g},
+arch:a=>{const[w,h,d,t]=a,s=new G.Shape();s.moveTo(-w/2,0);s.lineTo(-w/2,h);s.absarc(0,h,w/2,PI,0,true);s.lineTo(w/2,0);s.lineTo(w/2-t,0);s.lineTo(w/2-t,h);s.absarc(0,h,w/2-t,0,PI,false);s.lineTo(-w/2+t,0);s.closePath();const g=ex(s,d,.02);g.center();return g}};
+const DS=['hemi','plane','arch','ring','vase','cup','bottle','bowl','goblet','column'];
+const makeGeo=g=>LA[g.t]?lathe(LA[g.t],g.a[0]):(GF[g.t]||GF.box)(g.a);
+/* items */
+const I=(n,r,t,a,p,c,o={})=>({name:n,role:r,geo:{t,a},p,r:o.r||[0,0,0],s:o.s||[1,1,1],c,m:o.m??.3,ro:o.ro??.5,op:o.op??1});
+function setCol(m,c){m.material.color.set(c);if(m.userData.role==='light'){m.material.emissive.set(c);m.material.emissiveIntensity=.7}if(m.userData.pl)m.userData.pl.color.set(c)}
+function addItem(d){
+ const mat=new G.MeshPhysicalMaterial({color:d.c||'#ccc',metalness:d.m??.3,roughness:d.ro??.5,envMapIntensity:+$('#eI').value});mat.clearcoat=d.role==='body'?.7:0;mat.clearcoatRoughness=.08;mat.opacity=d.op??1;mat.transparent=mat.opacity<1;
+ if(d.role==='logo'){mat.transparent=true;mat.depthWrite=false;mat.polygonOffset=true;mat.polygonOffsetFactor=-2;mat.color.set('#fff');mat.metalness=0}
+ if(DS.includes(d.geo.t)||d.role==='logo')mat.side=G.DoubleSide;if(d.geo.t==='icosa')mat.flatShading=true;
+ const m=new G.Mesh(makeGeo(d.geo),mat);m.position.set(...d.p);m.rotation.set(...d.r);m.scale.set(...d.s);m.castShadow=d.role!=='logo';m.receiveShadow=true;
+ m.userData={name:d.name||'Qaama',role:d.role||'detail',geo:d.geo};
+ if(d.geo.t==='plight'){const l=new G.PointLight(d.c,d.geo.a[0]||1.5,14);m.add(l);m.userData.pl=l}
+ if(d.role!=='logo')setCol(m,d.c||'#ccc');
+ if(d.logo){m.userData.logo={...d.logo};logoTex(m)}
+ m.material.wireframe=$('#wf').checked;world.add(m);return m}
+const ser=m=>{const u=m.userData,b=u.b;return{name:u.name,role:u.role,geo:u.geo,p:m.position.toArray(),r:b?b.r:[m.rotation.x,m.rotation.y,m.rotation.z],s:b?b.s:m.scale.toArray(),c:'#'+m.material.color.getHexString(),m:m.material.metalness,ro:m.material.roughness,op:m.material.opacity,logo:u.logo}};
+const snapshot=()=>JSON.stringify(world.children.map(ser));
+function clearWorld(){select(null);[...world.children].forEach(m=>{world.remove(m);m.geometry.dispose();if(m.material.map)m.material.map.dispose();m.material.dispose()})}
+function loadSnap(s,i){clearWorld();JSON.parse(s).forEach(addItem);refresh();if(i!=null&&world.children[i])select(world.children[i])}
+function logoTex(m){const L=m.userData.logo,c=m.userData.cv||(m.userData.cv=document.createElement('canvas'));c.width=512;c.height=256;const x=c.getContext('2d');x.clearRect(0,0,512,256);x.fillStyle=L.color||'#fff';x.textAlign='center';x.textBaseline='middle';let s=120;while(s>20){x.font='800 '+s+'px Arial Black,Arial,sans-serif';if(x.measureText(L.text).width<480)break;s-=6}x.fillText(L.text,256,132);const t=m.material.map||new G.CanvasTexture(c);t.encoding=G.sRGBEncoding;m.material.map=t;t.needsUpdate=true;m.material.needsUpdate=true}
+/* selection */
+let sel=null,bh=[];
+function select(m){sel=m;bh.forEach(b=>scene.remove(b));bh=m?[new G.BoxHelper(m,0xf59e0b)]:[];bh.forEach(b=>scene.add(b));$('#pl').value=m?world.children.indexOf(m):'';syncE()}
+function refresh(){$('#pl').innerHTML='<option value="">— hin filatamne —</option>'+world.children.map((m,i)=>`<option value="${i}">${i+1}. ${m.userData.name}</option>`).join('');$('#pl').value=sel?world.children.indexOf(sel):''}
+$('#pl').onchange=e=>select(e.target.value===''?null:world.children[+e.target.value]);
+function delSel(){if(!sel)return toast('Duraan qaama filadhu');const m=sel;select(null);world.remove(m);m.geometry.dispose();refresh();commit()}
+function dupSel(mir){if(!sel)return toast('Duraan qaama filadhu');const d=ser(sel);if(mir){d.p[0]=-d.p[0];d.r[1]=-d.r[1];d.r[2]=-d.r[2];d.name+=' (mirror)'}else{d.p[0]+=.4;d.name+=' (kophee)'}const n=addItem(d);refresh();select(n);commit()}
+/* history + autosave */
+let hist=[],hi=-1,dirty=0;const SV='naol3d_v4';
+const blob=()=>JSON.stringify({items:snapshot(),an:{mode:an.mode,sp:an.sp,fl:an.fl},bg:$('#bg').value});
+function save(){try{if(!world.children.length&&!hist.length)return;localStorage.setItem(SV,blob())}catch(e){}dirty=0}
+function commit(){const s=snapshot();dirty=1;if(hist[hi]===s)return;hist=hist.slice(0,hi+1);hist.push(s);if(hist.length>60)hist.shift();hi=hist.length-1;save()}
+const undo=()=>hi>0?(hi--,loadSnap(hist[hi])):toast('Wanti deebisamu hin jiru'),redo=()=>hi<hist.length-1&&(hi++,loadSnap(hist[hi]));
+$('#hU').onclick=undo;$('#hR').onclick=redo;$('#hM').onclick=()=>$('#sheet').classList.toggle('min');
+['input','change','pointerup'].forEach(ev=>addEventListener(ev,()=>dirty=1,true));setInterval(()=>{if(dirty)save()},3000);
+addEventListener('pagehide',save);document.addEventListener('visibilitychange',()=>{if(document.hidden)save()});
+/* edit panel */
+const AX=['x','y','z'];
+const mk=(id,p,a,b,s)=>$(id).innerHTML=AX.map(k=>`<div class="row"><label>${k.toUpperCase()}</label><input type="range" id="${p}${k}" min="${a}" max="${b}" step="${s}" value="0"><output id="${p}${k}o"></output></div>`).join('');
+mk('#sP','p',-10,10,.02);mk('#sR','r',-180,180,1);mk('#sS','s',.05,8,.01);
+function syncE(){const m=sel;AX.forEach(k=>{$('#p'+k).value=m?m.position[k]:0;$('#r'+k).value=m?G.MathUtils.radToDeg(m.rotation[k]):0;$('#s'+k).value=m?m.scale[k]:1;$('#p'+k+'o').textContent=(+$('#p'+k).value).toFixed(2);$('#r'+k+'o').textContent=Math.round($('#r'+k).value)+'°';$('#s'+k+'o').textContent=(+$('#s'+k).value).toFixed(2)});
+ if(m&&m.userData.role!=='logo'){$('#mC').value='#'+m.material.color.getHexString();$('#mM').value=m.material.metalness;$('#mR').value=m.material.roughness;$('#mO').value=m.material.opacity}
+ ['mM','mR','mO'].forEach(i=>$('#'+i).nextElementSibling.textContent=(+$('#'+i).value).toFixed(2))}
+AX.forEach(k=>{$('#p'+k).oninput=()=>{if(sel){sel.position[k]=+$('#p'+k).value;$('#p'+k+'o').textContent=(+$('#p'+k).value).toFixed(2)}};
+ $('#r'+k).oninput=()=>{if(sel){sel.rotation[k]=G.MathUtils.degToRad(+$('#r'+k).value);$('#r'+k+'o').textContent=$('#r'+k).value+'°'}};
+ $('#s'+k).oninput=()=>{if(!sel)return;const v=+$('#s'+k).value;if($('#lk').checked)sel.scale.multiplyScalar(v/(sel.scale[k]||1));else sel.scale[k]=v;AX.forEach(b=>{$('#s'+b).value=sel.scale[b];$('#s'+b+'o').textContent=sel.scale[b].toFixed(2)})};
+ ['p','r','s'].forEach(q=>$('#'+q+k).onchange=commit)});
+$('#mC').oninput=e=>sel&&sel.userData.role!=='logo'&&setCol(sel,e.target.value);
+[['#mM','metalness'],['#mR','roughness']].forEach(([i,k])=>$(i).oninput=e=>{if(sel)sel.material[k]=+e.target.value;e.target.nextElementSibling.textContent=(+e.target.value).toFixed(2)});
+$('#mO').oninput=e=>{if(sel){sel.material.opacity=+e.target.value;sel.material.transparent=+e.target.value<1||sel.userData.role==='logo';sel.material.needsUpdate=true}e.target.nextElementSibling.textContent=(+e.target.value).toFixed(2)};
+['#mC','#mM','#mR','#mO'].forEach(i=>$(i).onchange=commit);
+$('#bDel').onclick=delSel;$('#tDel').onclick=delSel;$('#bDup').onclick=$('#tDup').onclick=()=>dupSel(false);$('#bMir').onclick=()=>dupSel(true);
+$('#bGr').onclick=()=>{if(!sel)return toast('Duraan qaama filadhu');world.updateMatrixWorld(true);sel.position.y-=new G.Box3().setFromObject(sel).min.y;syncE();commit()};
+/* add shapes */
+const BA=[['box','⬛','Kuubii',[1,1,1]],['sphere','⚫','Kubbaa',[.6]],['cyl','🥫','Siliindara',[.5,.5,1,32]],['cone','🔺','Koonii',[.6,1.2,32]],['pyr','🔻','Pirraamiidii',[.8,1.2]],['torus','🍩','Torasii',[.6,.22]],['plane','▬','Pileenii',[1.6,1]],['prism','⛺','Prizimii',[1.4,.9,1]],['wedge','◣','Wedge',[1.4,.8,1]],['bottle','🍾','Bootilee',[1]]];
+const PA=[['rbox','▢','Kuubii mara’e',[1.4,1,1,.2]],['knot','🪢','Torus Knot',[.5,.16]],['ring','💍','Mataa/Ring',[.6,.9,.2]],['helix','🌀','Helix',[.5,1,.06]],['stairs','🪜','Ol-ba’aa',[6,.2,.35,1.2]],['arch','🌉','Arch',[2,1.4,.5,.4]],['column','🏛️','Utubaa',[1]],['hemi','🥣','Dome',[.9]],['box','🧱','Dallaa',[3,2,.2]],['cyl','💿','Disk',[.8,.8,.08,48]],['hex','⬡','Hexagon',[.7,.5]],['octa','💎','Diamond',[.6],[.8,1.3,.8]],['icosa','🔷','Low-poly',[.7]],['capsule','💊','Kaapsuulii',[.35,.8]],['star','⭐','Urjii',[.7,.32,.25]],['heart','❤️','Onnee',[1]],['gear','⚙️','Giiyaarii',[.7,12,.25]],['cross','➕','Dabalaa',[1,.35,.25]],['vase','🏺','Vaazii',[1]],['plight','💡','Ifa (point light)',[1.5]]];
+const addBtn=(id,arr)=>arr.forEach(([t,ic,nm,a,s])=>{const b=document.createElement('div');b.className='btn';b.innerHTML='<b>'+ic+'</b>'+nm;b.onclick=()=>{const n=addItem(I(nm,t==='plight'?'light':'body',t,a.slice(),[0,t==='plane'||t==='knot'?1:.8,0],t==='plight'?'#fff2a8':'#8b5cf6',{ro:.35,m:.25,s:s}));refresh();select(n);commit();$('[data-t=edit]').click()};$(id).appendChild(b)});
+addBtn('#aB',BA);addBtn('#aP',PA);
+/* templates */
+const Z={r:[PI/2,0,0]},GL={m:.9,ro:.05,op:.75};
+const B=(n,r,w,h,d,x,y,z,c,o)=>I(n,r,'rbox',[w,h,d,.08],[x,y,z],c,o),Y=(n,r,rd,h,x,y,z,c,o)=>I(n,r,'cyl',[rd,rd,h,28],[x,y,z],c,o),S=(n,r,rd,x,y,z,c,o)=>I(n,r,'sphere',[rd],[x,y,z],c,o),N=(n,r,rd,h,x,y,z,c,o)=>I(n,r,'cone',[rd,h,28],[x,y,z],c,o);
+const L=(x,y,z,c='#fff4b0')=>S('Ifa','light',.14,x,y,z,c,{m:0,ro:.1});
+const W=(x,y,z,r,w)=>[I('Taayirii','wheel','cyl',[r,r,w,28],[x,y,z],'#151515',{...Z,m:0,ro:.9}),I('Rim','wheel2','cyl',[r*.62,r*.62,w*1.08,24],[x,y,z],'#d9dde3',{...Z,m:1,ro:.2}),I('Spoke','wheel2','box',[r*1.1,w*1.15,.07],[x,y,z],'#777',{...Z,m:1})];
+const WS=(xs,y,zs,r,w)=>xs.flatMap(x=>zs.flatMap(z=>W(x,y,z,r,w)));
+const T=[
+['🚗','Konkolaataa','drive',()=>{const g='#c62828',o={m:.65,ro:.22};return[I('Qaama','body','spline',[[[-2.25,.34],[-2.3,.7],[-2.12,.98],[-1.2,1.04],[0,1.06],[1.2,1.06],[2,.96],[2.28,.72],[2.26,.4],[2,.3],[0,.3],[-2,.3]],1.9,.07],[0,0,0],g,o),I('Galaasii','glass','spline',[[[-1.3,1.04],[-.95,1.6],[-.2,1.66],[.5,1.58],[1,1.08],[0,1]],1.62,.02],[0,0,0],'#10141c',GL),...WS([1.4,-1.4],.44,[.9,-.9],.44,.3),L(2.27,.8,.6),L(2.27,.8,-.6),L(-2.29,.82,.6,'#ff2a2a'),L(-2.29,.82,-.6,'#ff2a2a'),B('Bamperii','accent',.16,.18,1.7,2.28,.38,0,'#cfd3da',{m:1,ro:.2}),B('Bamperii 2','accent',.16,.18,1.7,-2.28,.38,0,'#cfd3da',{m:1,ro:.2}),B('Gadaa jala','detail',4.2,.1,1.6,0,.3,0,'#111',{m:0,ro:1})]}],
+['✈️','Xiyyaara','fly',()=>{const b='#e8ecf1',o={m:.5,ro:.28};return[I('Qaama','body','capsule',[.5,3.4],[0,1.6,0],b,{r:[0,0,PI/2],...o}),S('Mataa','glass',.42,1.2,1.82,0,'#1b2a44',{s:[1.4,.8,.9],m:.9,ro:.05}),B('Baaloo','body',1.6,.08,7,-.1,1.5,0,b,o),B('Hirkoo','accent',.8,1.1,.07,-2,2.2,0,'#2563eb',o),B('Fiixee','accent',.7,.06,2.2,-2.05,1.7,0,'#2563eb',o),B('Propeller','prop',.06,2.4,.18,2.2,1.6,0,'#222'),S('Hub','accent',.14,2.17,1.6,0,'#cfd3da',{m:1,ro:.2}),...W(.6,.3,.75,.3,.15),...W(.6,.3,-.75,.3,.15),...W(1.5,.3,0,.3,.15)]}],
+['🚀','Roogeettii','rocket',()=>{const a=[Y('Qaama','body',.6,2.4,0,2.2,0,'#f4f4f6',{m:.5,ro:.25}),N('Nose','accent',.6,1.2,0,4,0,'#e53935',{m:.5,ro:.25}),S('Foddaa','glass',.22,0,2.9,.5,'#1b2a44',{m:.9,ro:.05}),I('Injinii','detail','cone',[.45,.6,32],[0,.75,0],'#555',{r:[PI,0,0],m:.8}),I('Ibidda','flame','cone',[.3,.9,24],[0,.0,0],'#ff8a00',{r:[PI,0,0],m:0})];[0,1,2].forEach(i=>{const t=i*PI*2/3;a.push(B('Fin','accent',.9,1.1,.08,Math.cos(t)*.9,.9,Math.sin(t)*.9,'#e53935',{r:[0,-t,0],m:.5}))});return a}],
+['⛵','Doonii','sail',()=>[I('Qaama','body','spline',[[[-2.4,1],[-2.2,.3],[-1.2,0],[1,0],[2.3,.5],[2.9,1.1],[0,.95]],1.5,.05],[0,.1,0],'#f5f5f5',{m:.3,ro:.3}),B('Cinaa','accent',5,.12,1.54,.1,.45,0,'#1e5aa8'),B('Kaabiinii','body',1.6,.7,1,-.8,1.5,0,'#f5f5f5'),B('Foddaa','glass',1.62,.3,1.02,-.8,1.6,0,'#10141c',GL),Y('Mast','detail',.04,2.6,1,2.4,0,'#ddd'),I('Sail','light','wedge',[1.8,2.2,.04],[.1,1.3,0],'#fff',{m:0,ro:.9})]],
+['🏠','Mana','none',()=>[Y('Lafa','detail',4,.1,0,-.05,0,'#4c8c4a',{m:0,ro:.95}),I('Dallaa','body','box',[3.2,1.7,2.6],[0,.85,0],'#f1e3c8',{m:0,ro:.8}),I('Fuula ol','accent','prism',[3.7,1.2,3],[0,1.7,0],'#8b3a2b',{m:.1,ro:.6}),I('Balbala','detail','box',[.6,1,.06],[0,.5,1.32],'#6b4226',{m:0}),I('Foddaa','glass','box',[.6,.55,.06],[-1,1,1.32],'#9ecbff',GL),I('Foddaa 2','glass','box',[.6,.55,.06],[1,1,1.32],'#9ecbff',GL),I('Cuuqii','accent','box',[.35,.9,.35],[1,2.35,-.4],'#8b3a2b',{m:0})]],
+['🌲','Muka','none',()=>[Y('Qoma','detail',.22,1.2,0,.6,0,'#6b4a2b',{m:0,ro:.9}),N('Baala 1','body',1.4,1.6,0,1.7,0,'#2e7d32',{m:0,ro:.85}),N('Baala 2','body',1.1,1.4,0,2.6,0,'#388e3c',{m:0,ro:.85}),N('Baala 3','body',.8,1.2,0,3.4,0,'#43a047',{m:0,ro:.85})]],
+['🚌','Bas','drive',()=>[B('Qaama','body',4.6,1.4,1.7,0,1.1,0,'#f5c400',{m:.4,ro:.3}),B('Foddaa','glass',4.5,.5,1.72,0,1.45,0,'#10141c',GL),B('Cinaa','accent',4.62,.12,1.72,0,.8,0,'#d32f2f'),...WS([1.5,-1.5],.42,[.85,-.85],.42,.3),L(2.31,.8,.6),L(2.31,.8,-.6)]],
+['🚚','Konkolaataa ba’aa','drive',()=>[B('Kaabiinii','body',1.3,1.4,1.7,1.7,1.2,0,'#1e5aa8',{m:.5,ro:.3}),B('Foddaa','glass',.5,.6,1.72,2.1,1.5,0,'#10141c',GL),B('Ba’aa','accent',3.2,1.8,1.8,-.6,1.5,0,'#e5e7eb',{m:.2,ro:.5}),B('Chassis','detail',5.2,.25,1.5,0,.6,0,'#222'),...WS([1.7,-.2,-1.5],.45,[.8,-.8],.45,.3),L(2.36,.9,.6),L(2.36,.9,-.6)]],
+['🏍️','Motoraa','drive',()=>[...W(.85,.4,0,.4,.14),...W(-.85,.4,0,.4,.14),B('Tank','body',.9,.4,.4,.1,1.05,0,'#d32f2f',{m:.6,ro:.2}),B('Teessuma','detail',.8,.14,.35,-.4,.95,0,'#111'),Y('Fork','accent',.04,.9,.75,.85,0,'#cfd3da',{r:[0,0,.35],m:1}),Y('Handlebar','accent',.03,.7,.7,1.3,0,'#cfd3da',{...Z,m:1}),I('Injinii','detail','box',[.5,.4,.4],[0,.6,0],'#555',{m:.8}),S('Ifa','light',.12,.95,1.15,0,'#fff4b0',{m:0})]],
+['🚆','Baabura','drive',()=>[B('Qaama','body',5,1.3,1.4,0,1.1,0,'#1e5aa8',{m:.4}),B('Nose','body',.8,1,1.4,2.6,1.05,0,'#d32f2f'),B('Foddaa','glass',1.4,.5,1.42,-.8,1.45,0,'#10141c',GL),B('Fuula ol','accent',5.1,.1,1.5,0,1.8,0,'#ddd'),Y('Cuuqii','detail',.2,.5,1.5,2.05,0,'#222'),B('Gadaa','detail',5.4,.12,1.6,0,.6,0,'#222'),...WS([-1.6,-.5,.7,1.8],.3,[.65,-.65],.3,.18),L(3,1,.4),L(3,1,-.4)]],
+['🚁','Helikoptarii','fly',()=>[I('Qaama','body','capsule',[.6,1.8],[0,1.4,0],'#d32f2f',{r:[0,0,PI/2],m:.5,ro:.25}),S('Mataa','glass',.5,.7,1.45,0,'#1b2a44',{s:[1,.8,.9],m:.9,ro:.05}),Y('Boom','body',.14,2.4,-1.9,1.55,0,'#d32f2f',{r:[0,0,PI/2]}),B('Fiixee','accent',.5,.8,.06,-3,1.8,0,'#cfd3da'),Y('Mast','detail',.06,.35,0,2.15,0,'#555'),B('Rotor','rotor',4.4,.05,.2,0,2.35,0,'#222'),B('Rotor 2','rotor',.2,.05,4.4,0,2.36,0,'#222'),B('Fan','fan',.1,1,.04,-3.1,1.8,.2,'#222'),Y('Skid','detail',.04,2.2,0,.6,.5,'#333',{r:[0,0,PI/2]}),Y('Skid 2','detail',.04,2.2,0,.6,-.5,'#333',{r:[0,0,PI/2]}),Y('Leg','detail',.03,.8,0,.9,.5,'#333'),Y('Leg 2','detail',.03,.8,0,.9,-.5,'#333')]],
+['🛸','Drone','bob',()=>{const a=[B('Qaama','body',.7,.2,.7,0,1.2,0,'#222'),Y('Arm','accent',.04,1.8,0,1.2,0,'#555',{r:[0,0,PI/2],m:.8}),Y('Arm 2','accent',.04,1.8,0,1.2,0,'#555',{...Z,m:.8}),S('Kaameraa','glass',.12,.4,1.1,0,'#111',{m:.9,ro:.05}),L(-.36,1.2,0,'#ff3030')];[[.9,0],[-.9,0],[0,.9],[0,-.9]].forEach(p=>a.push(B('Rotor','rotor',.8,.02,.08,p[0],1.3,p[1],'#999')));return a}],
+['👽','UFO','bob',()=>{const a=[S('Qaama','body',1.6,0,1.4,0,'#b0b6c0',{s:[1,.25,1],m:.9,ro:.2}),I('Dome','glass','hemi',[.7],[0,1.5,0],'#9ecbff',{m:.9,ro:.05,op:.6})];for(let i=0;i<8;i++)a.push(L(Math.cos(i*PI/4)*1.3,1.4,Math.sin(i*PI/4)*1.3,'#7dffb2'));return a}],
+['🚢','Sub','sail',()=>[I('Qaama','body','capsule',[.75,3],[0,1.2,0],'#f2c200',{r:[0,0,PI/2],m:.5,ro:.3}),B('Kaabiinii','body',1,.7,.6,0,2,0,'#f2c200'),Y('Periscope','detail',.04,.8,.2,2.6,0,'#555'),B('Prop','prop',.06,1.2,.1,-2.4,1.2,0,'#444'),S('Foddaa','glass',.16,1,1.3,.7,'#9ecbff',GL),S('Foddaa 2','glass',.16,.3,1.3,.7,'#9ecbff',GL),S('Foddaa 3','glass',.16,-.4,1.3,.7,'#9ecbff',GL)]],
+['🛰️','Satelaayitii','spin',()=>[B('Qaama','body',.9,.9,.9,0,1.5,0,'#d4af37',{m:1,ro:.2}),B('Panel','accent',2,.04,.9,-1.6,1.5,0,'#1e3a8a',{m:.6,ro:.2}),B('Panel 2','accent',2,.04,.9,1.6,1.5,0,'#1e3a8a',{m:.6,ro:.2}),Y('Rod','detail',.04,3,0,1.5,0,'#aaa',{r:[0,0,PI/2]}),I('Dish','accent','hemi',[.4],[0,2,0],'#cfd3da',{m:1,ro:.2}),Y('Antenna','detail',.02,.8,0,2.5,0,'#ccc')]],
+['🏰','Masaraa','none',()=>{const a=[I('Keep','body','box',[2,2.6,2],[0,1.3,0],'#b8b3a8',{m:0,ro:.9}),N('Roof','accent',1.6,1.2,0,3.2,0,'#8b3a2b',{m:0}),B('Balbala','detail',.8,1,.1,0,.5,1.02,'#4a2f1a')];[[1,1],[1,-1],[-1,1],[-1,-1]].forEach(p=>{a.push(Y('Tower','body',.55,3,p[0]*1.9,1.5,p[1]*1.9,'#a9a398',{m:0,ro:.9}),N('Roof','accent',.7,.9,p[0]*1.9,3.45,p[1]*1.9,'#8b3a2b',{m:0}))});[1.9,-1.9].forEach(v=>a.push(B('Gaaddisa','body',3.8,1.2,.25,0,.6,v,'#a9a398',{m:0}),B('Gaaddisa','body',.25,1.2,3.8,v,.6,0,'#a9a398',{m:0})));return a}],
+['🌬️','Muka bubbee','idle',()=>[I('Dallaa','body','cyl',[.5,.8,2.6,28],[0,1.3,0],'#f1e3c8',{m:0,ro:.8}),N('Fuula ol','accent',.65,.8,0,3,0,'#8b3a2b',{m:0}),B('Baala','fan',.2,3.2,.05,0,2.6,.65,'#ddd',{m:0}),B('Baala 2','fan',3.2,.2,.05,0,2.6,.65,'#ddd',{m:0}),S('Hub','detail',.15,0,2.6,.7,'#555'),B('Balbala','detail',.4,.7,.06,0,.35,.78,'#6b4226')]],
+['🗼','Ibsaa galaanaa','idle',()=>[I('Qaama','body','cyl',[.6,1,4,32],[0,2,0],'#f5f5f5',{m:0,ro:.6}),I('Marka','accent','cyl',[.76,.94,.5,32],[0,1,0],'#d32f2f',{m:0}),I('Marka 2','accent','cyl',[.73,.78,.5,32],[0,2.6,0],'#d32f2f',{m:0}),Y('Gallery','detail',.75,.1,0,4.05,0,'#333'),S('Ifa','light',.35,0,4.4,0,'#fff2a8',{m:0,ro:.2}),N('Fuula ol','accent',.55,.6,0,4.95,0,'#d32f2f',{m:0})]],
+['⛄','Nama cabbii','none',()=>[S('Gad','body',.9,0,.9,0,'#fff',{m:0,ro:.9}),S('Gidduu','body',.65,0,2.1,0,'#fff',{m:0,ro:.9}),S('Mataa','body',.45,0,3.05,0,'#fff',{m:0,ro:.9}),S('Ija','detail',.05,-.17,3.15,.4,'#111'),S('Ija 2','detail',.05,.17,3.15,.4,'#111'),I('Funyaan','accent','cone',[.07,.4,12],[0,3.05,.5],'#ff8a00',{...Z,m:0}),Y('Koofiyaa','detail',.3,.4,0,3.55,0,'#111'),Y('Koofiyaa 2','detail',.45,.05,0,3.35,0,'#111'),I('Scarf','accent','torus',[.42,.09],[0,2.6,0],'#d32f2f',{...Z,m:0})]],
+['🛏️','Siree','none',()=>[B('Teessuma','body',3,.4,2,0,.4,0,'#8b5a2b',{m:0,ro:.6}),B('Matiresii','accent',2.8,.3,1.8,0,.75,0,'#f5f5f5',{m:0,ro:.9}),B('Pilloo','accent',.8,.2,.5,-1,.98,.45,'#9ecbff',{m:0,ro:.9}),B('Pilloo 2','accent',.8,.2,.5,-1,.98,-.45,'#9ecbff',{m:0,ro:.9}),B('Dugda','body',.2,1.2,2,-1.55,.9,0,'#8b5a2b',{m:0,ro:.6}),B('Gonfoo','accent',1.8,.1,1.82,.5,.95,0,'#3b6fb6',{m:0,ro:.9})]],
+['📺','TV','none',()=>[B('Frame','detail',2.2,1.3,.1,0,1.35,0,'#111',{m:.6}),B('Screen','glass',2.05,1.15,.02,0,1.35,.06,'#0b1a30',{m:.2,ro:.05}),Y('Foot','detail',.07,.7,0,.35,0,'#333'),Y('Base','detail',.5,.06,0,.03,0,'#222')]],
+['🏆','Gonfoo (Trophy)','spin',()=>[I('Koopii','body','goblet',[1],[0,1.05,0],'#d4af37',{m:1,ro:.15}),B('Dabaan','detail',1.2,.3,1.2,0,.15,0,'#222'),I('Handle','body','torus',[.3,.06],[.7,1.35,0],'#d4af37',{m:1,ro:.15}),I('Handle 2','body','torus',[.3,.06],[-.7,1.35,0],'#d4af37',{m:1,ro:.15})]],
+['🕒','Sa’aatii','none',()=>{const a=[I('Face','accent','cyl',[1,1,.12,48],[0,1.6,0],'#f5f5f5',{...Z,m:0,ro:.4}),I('Rim','detail','torus',[1,.07],[0,1.6,.04],'#8b5a2b'),B('Hand','detail',.07,.7,.03,0,1.95,.1,'#111'),B('Hand 2','detail',.5,.06,.03,.25,1.6,.1,'#111'),Y('Foot','detail',.1,.6,0,.3,-.1,'#8b5a2b')];for(let i=0;i<12;i++)a.push(S('Mark','detail',.04,Math.sin(i*PI/6)*.85,1.6+Math.cos(i*PI/6)*.85,.08,'#222'));return a}],
+['🔦','Ibsaa daandii','none',()=>[Y('Pole','accent',.06,3.6,0,1.8,0,'#2b2f36',{m:.8}),Y('Base','detail',.2,.2,0,.1,0,'#2b2f36'),Y('Arm','accent',.04,.9,.4,3.55,0,'#2b2f36',{r:[0,0,PI/2]}),B('Lamp','body',.6,.12,.3,.85,3.5,0,'#2b2f36'),I('Ifa','light','plight',[1.5],[.85,3.4,0],'#fff2a8',{m:0})]],
+['🌵','Cactus','none',()=>[I('Qaama','body','capsule',[.35,1.6],[0,1.4,0],'#2e7d32',{m:0,ro:.8}),I('Harka','body','capsule',[.2,.6],[.6,1.5,0],'#2e7d32',{m:0,ro:.8}),I('Cinaa','body','capsule',[.18,.3],[.35,1.1,0],'#2e7d32',{r:[0,0,PI/2],m:0,ro:.8}),I('Poota','accent','cyl',[.55,.4,.6,32],[0,.3,0],'#c2410c',{m:0,ro:.8})]],
+['🪑','Teessuma','none',()=>[B('Teessuma','body',1,.12,1,0,.8,0,'#a0643a',{m:0,ro:.6}),B('Dugda','body',1,1,.1,0,1.3,-.45,'#a0643a',{m:0,ro:.6}),...[[1,1],[1,-1],[-1,1],[-1,-1]].map(p=>Y('Miila','accent',.05,.8,p[0]*.42,.4,p[1]*.42,'#5a3820',{m:0}))]],
+['⬜','Duwwaa','none',()=>[]]];
+function loadT(i){clearWorld();playA(false);T[i][3]().forEach(addItem);setMode(T[i][2]);refresh();fitView();commit();syncRole();toast('Fakkeenya fe’ameera ✔')}
+T.forEach((t,i)=>{const b=document.createElement('div');b.className='btn';b.innerHTML='<b>'+t[0]+'</b>'+t[1];b.onclick=()=>loadT(i);$('#tG').appendChild(b)});
+/* colors */
+const syncRole=()=>$$('[data-role]').forEach(i=>{const m=world.children.find(x=>x.userData.role===i.dataset.role);if(m)i.value='#'+m.material.color.getHexString()});
+$$('[data-role]').forEach(i=>{i.oninput=()=>world.children.forEach(m=>m.userData.role===i.dataset.role&&setCol(m,i.value));i.onchange=commit});
+const FN={'✨ Calaqqisaa':{m:.5,ro:.12},'🧱 Matte':{m:0,ro:.85},'⚙️ Chrome':{m:1,ro:.12},'🥇 Warqee':{m:1,ro:.2,c:'#d4af37'},'🔷 Galaasii':{m:.9,ro:.05,op:.55}};
+Object.entries(FN).forEach(([n,F])=>{const b=document.createElement('div');b.className='btn';b.textContent=n;b.onclick=()=>{const t=sel?[sel]:world.children.filter(m=>m.userData.role==='body');t.forEach(m=>{m.material.metalness=F.m;m.material.roughness=F.ro;if(F.c)setCol(m,F.c);m.material.opacity=F.op||1;m.material.transparent=!!F.op;m.material.needsUpdate=true});syncE();commit()};$('#fin').appendChild(b)});
+['#d32f2f','#f97316','#facc15','#22c55e','#0ea5e9','#3b82f6','#8b5cf6','#ec4899','#ffffff','#9ca3af','#374151','#111111'].forEach(c=>{const d=document.createElement('div');d.className='btn';d.style.background=c;d.style.height='36px';d.onclick=()=>{(sel&&sel.userData.role!=='logo'?[sel]:world.children.filter(m=>m.userData.role==='body')).forEach(m=>setCol(m,c));syncE();syncRole();commit()};$('#sw').appendChild(d)});
+/* logo */
+$('#lAdd').onclick=()=>{const b=bounds(),h=!b.isEmpty(),n=addItem({name:'Logo: '+$('#lT').value,role:'logo',geo:{t:'plane',a:[2,1]},p:[0,h?(b.min.y+b.max.y)/2:1,h?b.max.z+.03:0],r:[0,0,0],s:[.6,.6,.6],c:'#fff',m:0,ro:.6,logo:{text:$('#lT').value||'LOGO',color:$('#lC').value}});refresh();select(n);commit();$('[data-t=edit]').click()};
+$('#lUp').onclick=()=>{if(!sel||!sel.userData.logo)return toast('Logo filadhu');Object.assign(sel.userData.logo,{text:$('#lT').value,color:$('#lC').value});sel.userData.name='Logo: '+$('#lT').value;logoTex(sel);refresh();commit()};
+/* env */
+$('#bg').oninput=e=>{R.setClearColor(e.target.value,1);scene.fog.color.set(e.target.value)};
+$('#fl').onchange=e=>floor.visible=e.target.checked;$('#flC').oninput=e=>floor.material.color.set(e.target.value);$('#gr').onchange=e=>grid.visible=e.target.checked;
+$('#wf').onchange=e=>world.children.forEach(m=>m.material.wireframe=e.target.checked);$('#sh').onchange=e=>sun.castShadow=e.target.checked;
+$('#sI').oninput=e=>{sun.intensity=+e.target.value;e.target.nextElementSibling.textContent=(+e.target.value).toFixed(1)};
+$('#eI').oninput=e=>{world.children.forEach(m=>m.material.envMapIntensity=+e.target.value);e.target.nextElementSibling.textContent=(+e.target.value).toFixed(1)};
+$('#sI').oninput({target:$('#sI')});$('#eI').oninput({target:$('#eI')});
+const LT={'☀️ Guyyaa':['#ffffff',1.6,'#1a1a26'],'🎞️ Studio':['#ffffff',2.2,'#2b2b3a'],'🌙 Halkan':['#7f9bff',.7,'#07070d'],'🌇 Dhiyaachuu':['#ff9a5a',1.8,'#3a1d2a']};
+Object.entries(LT).forEach(([n,v])=>{const b=document.createElement('div');b.className='btn';b.textContent=n;b.onclick=()=>{sun.color.set(v[0]);sun.intensity=v[1];$('#sI').value=v[1];$('#sI').oninput({target:$('#sI')});$('#bg').value=v[2];$('#bg').oninput({target:$('#bg')})};$('#lt').appendChild(b)});
+$$('[data-cam]').forEach(b=>b.onclick=()=>{const k=b.dataset.cam;if(k==='fit')return fitView();const P={front:[0,.15],side:[PI/2,.12],back:[PI,.15],top:[az,1.45],iso:[.75,.4]}[k];az=P[0];el=P[1];fitView()});
+$$('#tabs button').forEach(b=>b.onclick=()=>{$$('#tabs button').forEach(x=>x.classList.toggle('on',x===b));$$('.pn').forEach(p=>p.classList.toggle('on',p.id==='p-'+b.dataset.t));$('#sheet').classList.remove('min');$('#panels').scrollTop=0});
+/* animation */
+let an={mode:'none',sp:1,fl:true,on:false},at=0;const SPR=/^(wheel|prop|rotor|fan|flame)/;
+function setMode(m){an.mode=m;$('#amode').value=m}
+$('#amode').onchange=e=>{an.mode=e.target.value;if(an.on)playA(false)};$('#asp').oninput=e=>{an.sp=+e.target.value;e.target.nextElementSibling.textContent=an.sp.toFixed(2)};$('#afl').onchange=e=>an.fl=e.target.checked;$('#asp').oninput({target:$('#asp')});
+function playA(on){if(on===an.on)return;an.on=on;$('#tPlay').classList.toggle('on',on);$('#tPlay').textContent=on?'⏸ Sochii':'▶ Sochii';const sp=world.children.filter(m=>SPR.test(m.userData.role));
+ if(on){at=0;sp.forEach(m=>m.userData.b={r:[m.rotation.x,m.rotation.y,m.rotation.z],s:m.scale.toArray()})}
+ else{sp.forEach(m=>{const b=m.userData.b;if(b){m.rotation.set(...b.r);m.scale.set(...b.s);delete m.userData.b}});world.position.set(0,0,0);world.rotation.set(0,0,0);fitView()}}
+$('#tPlay').onclick=$('#aGo').onclick=()=>{if(an.mode==='none')return toast('Duraan “Sochii” keessatti akkaataa filadhu');playA(!an.on)};$('#aRs').onclick=()=>playA(false);
+function animStep(dt){if(!an.on||drag)return;at+=dt*an.sp;const t=at,w=world,m=an.mode,c=(y,ro)=>{const f=t*.3;w.position.set(7*Math.cos(f)-7,y,-7*Math.sin(f));w.rotation.set(ro,f+PI/2,0)};
+ if(m==='drive')c(0,0);else if(m==='fly')c(3+Math.sin(t)*.5,-.3);else if(m==='sail')c(Math.sin(t*2)*.08,Math.sin(t*1.5)*.04);
+ else if(m==='rocket'){const k=t%8;w.position.set(Math.sin(t*50)*.01*k,.6*k*k,0)}else if(m==='spin')w.rotation.y=t*.8;else if(m==='bob'){w.position.y=.3+Math.sin(t*2)*.25;w.rotation.y=t*.3}
+ world.children.forEach(o=>{const r=o.userData.role;if(!SPR.test(r))return;const s=dt*an.sp;if(r.startsWith('wheel')){if(m==='drive')o.rotateY(-s*8)}else if(r==='rotor')o.rotateY(s*30);else if(r==='prop')o.rotateX(s*35);else if(r==='fan')o.rotateZ(s*(m==='idle'?2:20));else if(r==='flame'&&m==='rocket'&&o.userData.b)o.scale.y=o.userData.b.s[1]*(1+.35*Math.sin(t*40))});
+ if(an.fl)tg.lerp(new G.Vector3(w.position.x,w.position.y+1,w.position.z),.1)}
+/* pointer */
+const P=new Map(),ray=new G.Raycaster(),nd=new G.Vector2();let mv=0,p0=0,d0=0,drag=null,snap=0,vert=0;
+const sn=v=>snap?Math.round(v/.1)*.1:v,setRay=(x,y)=>{const r=cv.getBoundingClientRect();nd.set((x-r.left)/r.width*2-1,-(y-r.top)/r.height*2+1);ray.setFromCamera(nd,cam)};
+$('#tSnap').onclick=e=>{snap=!snap;e.currentTarget.classList.toggle('on',snap)};$('#tV').onclick=e=>{vert=!vert;e.currentTarget.textContent=vert?'⬌ Screen':'⬍ Olii';e.currentTarget.classList.toggle('on',vert)};
+cv.onpointerdown=e=>{cv.setPointerCapture(e.pointerId);P.set(e.pointerId,{x:e.clientX,y:e.clientY});
+ if(P.size===2){drag=null;const[a,b]=[...P.values()];p0=Math.hypot(a.x-b.x,a.y-b.y);d0=dist;mv=99;return}
+ mv=0;drag=null;if(rec)return;setRay(e.clientX,e.clientY);const h=ray.intersectObjects(world.children,false)[0];
+ if(h){if(sel!==h.object)select(h.object);const n=vert?cam.getWorldDirection(new G.Vector3()):new G.Vector3(0,1,0);drag={pl:new G.Plane().setFromNormalAndCoplanarPoint(n,h.point),p:h.point.clone(),o:sel.position.clone(),ch:0}}};
+cv.onpointermove=e=>{const p=P.get(e.pointerId);if(!p||rec)return;
+ if(drag&&P.size===1){setRay(e.clientX,e.clientY);const V=new G.Vector3();if(ray.ray.intersectPlane(drag.pl,V)){const d=world.worldToLocal(V).sub(world.worldToLocal(drag.p.clone()));sel.position.set(sn(drag.o.x+d.x),sn(drag.o.y+d.y),sn(drag.o.z+d.z));drag.ch=1;syncE()}p.x=e.clientX;p.y=e.clientY;return}
+ if(P.size===1){mv+=Math.abs(e.clientX-p.x)+Math.abs(e.clientY-p.y);az-=(e.clientX-p.x)*.008;el+=(e.clientY-p.y)*.008}
+ else if(P.size===2){p.x=e.clientX;p.y=e.clientY;const[a,b]=[...P.values()];if(p0)dist=d0*p0/Math.hypot(a.x-b.x,a.y-b.y);return}
+ p.x=e.clientX;p.y=e.clientY};
+cv.onpointerup=e=>{const had=P.size;P.delete(e.pointerId);if(drag){if(drag.ch)commit();drag=null;return}
+ if(had===1&&mv<8&&!rec){setRay(e.clientX,e.clientY);const h=ray.intersectObjects(world.children,false)[0];select(h?h.object:null);if(h)toast('Filatame: '+h.object.userData.name)}};
+cv.onpointercancel=e=>{P.delete(e.pointerId);drag=null};cv.addEventListener('wheel',e=>{e.preventDefault();dist*=1+Math.sign(e.deltaY)*.08},{passive:false});
+/* audio */
+const SN=['Cinematic Pad','Epic Drone','Dark Ambient','Space Float','Hero Rise','Soft Keys','Pluck Arp','Tech Pulse','Retro Wave','Dream Bells','Sub Bass','Wind','Ocean Hum','Engine Idle','Jet Rumble','Rocket Roar','Whoosh Loop','Heartbeat','Sci-Fi Hum','Choir Pad','Bright Arp','Minor Arp','Major Arp','Fast Arp','Slow Arp','Glass Pad','Warm Saw','Deep Cinema','Ticking','Shimmer'];
+const SP=[['P',110,'sawtooth',[0,7,12,16]],['P',55,'sawtooth',[0,7,12]],['P',65,'sine',[0,3,7,14]],['P',220,'sine',[0,7,14,19]],['A',110,'triangle',90,[0,7,12,16,19,24]],['A',220,'sine',60,[0,4,7,12,7,4]],['A',220,'square',120,[0,7,12,7]],['A',110,'sawtooth',140,[0,0,12,0,7,0]],['A',165,'sawtooth',110,[0,3,7,10,12,10,7,3]],['A',523,'sine',70,[0,4,7,11,14]],['P',41,'sine',[0,12]],['N',500,.2,1],['N',250,.1,.5],['E',45,'sawtooth',14],['N',900,.3,3],['N',300,.5,12],['N',1500,.25,2],['A',55,'sine',72,[0,0,-99,-99]],['E',90,'square',5],['P',196,'triangle',[0,4,7,12,16]],['A',330,'triangle',120,[0,4,7,12]],['A',220,'triangle',100,[0,3,7,12]],['A',262,'sine',100,[0,4,7,9,12]],['A',262,'square',180,[0,4,7,12,16,12,7,4]],['A',110,'sine',50,[0,7,12]],['P',392,'sine',[0,5,12,17]],['P',82,'sawtooth',[0,7,12,19]],['P',49,'sawtooth',[0,12,19,24]],['A',1800,'square',120,[0,-99]],['A',1046,'sine',160,[0,4,7,12,16,19]]];
+$('#vSnd').innerHTML='<option value="0">Sagalee hin jiru</option>'+SN.map((n,i)=>`<option value="${i+1}">${i+1}. ${n}</option>`).join('');
+let AC,AD,MG,stopS=null;
+function sPlay(i,vol){if(!i)return;if(!AC){AC=new(window.AudioContext||window.webkitAudioContext)();MG=AC.createGain();AD=AC.createMediaStreamDestination();MG.connect(AC.destination);MG.connect(AD)}AC.resume();sStop();MG.gain.value=vol;
+ const[k,a,b,c,d]=SP[i-1],nd=[],tm=[],mkO=(ty,f)=>{const o=AC.createOscillator();o.type=ty;o.frequency.value=f;nd.push(o);return o};
+ if(k==='P')c.forEach(n=>{const o=mkO(b,a*2**(n/12)),g=AC.createGain(),f=AC.createBiquadFilter();o.detune.value=Math.random()*14-7;g.gain.value=.12;f.type='lowpass';f.frequency.value=1200;o.connect(f);f.connect(g);g.connect(MG);o.start();nd.push(g,f)});
+ else if(k==='A'){let n=0;tm.push(setInterval(()=>{const s=d[n++%d.length];if(s<-50)return;const o=AC.createOscillator(),g=AC.createGain();o.type=b;o.frequency.value=a*2**(s/12);g.gain.setValueAtTime(.18,AC.currentTime);g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+.5);o.connect(g);g.connect(MG);o.start();o.stop(AC.currentTime+.55)},60000/c))}
+ else{const g=AC.createGain(),l=mkO('sine',k==='N'?b:c),lg=AC.createGain(),f=AC.createBiquadFilter();g.gain.value=.5;lg.gain.value=.3;l.connect(lg);lg.connect(g.gain);l.start();nd.push(g,lg,f);
+  if(k==='N'){const buf=AC.createBuffer(1,AC.sampleRate*2,AC.sampleRate),da=buf.getChannelData(0);for(let j=0;j<da.length;j++)da[j]=Math.random()*2-1;const s=AC.createBufferSource();s.buffer=buf;s.loop=true;f.type='bandpass';f.frequency.value=a;f.Q.value=c;s.connect(f);s.start();nd.push(s)}
+  else{const o=mkO(b,a);f.type='lowpass';f.frequency.value=400;o.connect(f);o.start()}
+  f.connect(g);g.connect(MG)}
+ stopS=()=>{tm.forEach(clearInterval);nd.forEach(x=>{try{x.stop&&x.stop()}catch(e){}try{x.disconnect()}catch(e){}})}}
+const sStop=()=>{if(stopS){stopS();stopS=null}};
+$('#vPv').onclick=()=>sPlay(+$('#vSnd').value,+$('#vVol').value);$('#vPs').onclick=sStop;$('#vVol').oninput=e=>MG&&(MG.gain.value=+e.target.value);
+/* recording */
+let rec=null,mr=null,chunks=[];const RC=document.createElement('canvas'),rx=RC.getContext('2d');
+const FL=['none','sepia(.35) saturate(1.3) brightness(1.05)','hue-rotate(185deg) saturate(1.1) contrast(1.05)','grayscale(1) contrast(1.15)','saturate(1.6) contrast(1.1)','sepia(.7) contrast(.95) brightness(.95)'];
+const STY={cin:[.07,.35,.15,.05],fast:[.17,.2,.12,.08],hero:[.05,.4,.2,.03],calm:[.03,.15,.08,.02]};
+function startRec(){if(!window.MediaRecorder)return toast('Chrome fayyadami');if(!world.children.length||rec)return toast('Duraan wanta design godhi');select(null);
+ RC.width=cv.width;RC.height=cv.height;const ownAnim=$('#vAn').checked&&an.mode!=='none'&&!an.on;if(ownAnim)playA(true);if($('#vFit').checked&&!an.on)fitView();
+ const si=+$('#vSnd').value;if(si)sPlay(si,+$('#vVol').value);const st=RC.captureStream(30);if(si&&AD)AD.stream.getAudioTracks().forEach(t=>st.addTrack(t));
+ const mt=['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm','video/mp4'].find(t=>MediaRecorder.isTypeSupported(t))||'';
+ try{mr=new MediaRecorder(st,mt?{mimeType:mt,videoBitsPerSecond:+$('#vQ').value}:undefined)}catch(e){return toast('Waraabuun hin eegalamne')}
+ chunks=[];mr.ondataavailable=e=>e.data&&e.data.size&&chunks.push(e.data);
+ mr.onstop=()=>{const u=URL.createObjectURL(new Blob(chunks,{type:mt||'video/webm'}));$('#vv').src=u;$('#vd').href=u;$('#vd').download='naol-3d.'+(mt.includes('mp4')?'mp4':'webm');$('#mv').style.display='flex'};
+ rec={t0:performance.now(),D:+$('#vDur').value,dir:+$('#vDir').value,s:$('#vSty').value,sp:+$('#vSp').value,f:+$('#vFl').value,lb:$('#vLb').checked,tx:$('#vTx').value,az:az,el:el,d0:dist,own:ownAnim};
+ $('#rec').style.display='block';mr.start(250);$('#sheet').classList.add('min')}
+function stopRec(){if(!rec)return;const r=rec;rec=null;$('#rec').style.display='none';mr.state!=='inactive'&&mr.stop();sStop();if(r.own)playA(false);az=r.az;el=r.el;dist=r.d0}
+$('#vGo').onclick=startRec;$('#vSt').onclick=stopRec;$('#vc').onclick=()=>{$('#mv').style.display='none';$('#vv').pause();$('#vv').removeAttribute('src')};
+function recCam(t){const[tr,za,ba,zc]=STY[rec.s],k=Math.min(1,t/rec.D);az=rec.az+rec.dir*2*PI*tr*rec.sp*t;
+ if(rec.s==='hero'){const e=k*k*(3-2*k);el=.12+.4*e;dist=rec.d0*(1.15-.5*e)}else{el=rec.el+ba*Math.sin(2*PI*zc*rec.sp*t*1.3);const u=(1-Math.cos(2*PI*zc*rec.sp*t))/2;dist=rec.d0*(1.1-1.5*za*u)}}
+function drawRec(t){const w=RC.width,h=RC.height,D=rec.D;rx.filter=FL[rec.f];rx.drawImage(cv,0,0,w,h);rx.filter='none';
+ if(rec.lb){const g=rx.createRadialGradient(w/2,h/2,Math.min(w,h)*.35,w/2,h/2,Math.max(w,h)*.75);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,.55)');rx.fillStyle=g;rx.fillRect(0,0,w,h);rx.fillStyle='#000';rx.fillRect(0,0,w,h*.1);rx.fillRect(0,h*.9,w,h*.1)}
+ if(rec.tx&&t<4.5){rx.globalAlpha=Math.max(0,Math.min(1,t,4.5-t));rx.fillStyle='#fff';rx.shadowColor='#000';rx.shadowBlur=12;rx.textAlign='center';rx.font='800 '+Math.round(h*.07)+'px Arial Black,Arial,sans-serif';rx.fillText(rec.tx,w/2,h*.8);rx.shadowBlur=0;rx.globalAlpha=1}
+ if(rec.lb){const f=Math.max(0,1-t/.8,1-(D-t)/.8);if(f>0){rx.globalAlpha=Math.min(1,f);rx.fillStyle='#000';rx.fillRect(0,0,w,h);rx.globalAlpha=1}}}
+/* loop */
+let last=performance.now();
+function frame(now){requestAnimationFrame(frame);const dt=Math.min(.05,(now-last)/1000);last=now;animStep(dt);let t=0;
+ if(rec){t=(now-rec.t0)/1000;if(t>=rec.D)stopRec();else{recCam(t);$('#rec').textContent='● REC '+Math.ceil(rec.D-t)+'s'}}else if($('#spin').checked&&!P.size)az+=dt*.5;
+ camUpd();bh.forEach(b=>b.update());R.render(scene,cam);if(rec)drawRec(t)}
+/* export */
+const dl=(b,n)=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=n;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000)};
+$('#oPng').onclick=()=>{bh.forEach(b=>b.visible=false);R.render(scene,cam);cv.toBlob(b=>{dl(b,'naol-3d.png');toast('PNG buufameera ✔')});bh.forEach(b=>b.visible=true)};
+$('#oObj').onclick=()=>{let o='# Naol 3D\n',off=1;world.updateMatrixWorld(true);world.children.forEach((m,i)=>{const g=m.geometry.clone();g.applyMatrix4(m.matrixWorld);const p=g.attributes.position,ix=g.index;o+=`o ${m.userData.name.replace(/\s+/g,'_')}_${i}\n`;for(let v=0;v<p.count;v++)o+=`v ${p.getX(v).toFixed(5)} ${p.getY(v).toFixed(5)} ${p.getZ(v).toFixed(5)}\n`;const n=ix?ix.count:p.count;for(let f=0;f<n;f+=3){const q=j=>(ix?ix.getX(f+j):f+j)+off;o+=`f ${q(0)} ${q(1)} ${q(2)}\n`}off+=p.count;g.dispose()});dl(new Blob([o]),'naol-3d.obj')};
+$('#oJ').onclick=()=>dl(new Blob([snapshot()],{type:'application/json'}),'naol-3d-project.json');$('#oL').onclick=()=>$('#oF').click();
+$('#oF').onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(t=>{try{playA(false);loadSnap(t);fitView();commit()}catch(_){toast('Faayiliin kun hin sirrooftu')}});e.target.value=''};
+$('#oClr').onclick=()=>{if(confirm('Hunda haquu barbaadaa?')){playA(false);clearWorld();refresh();commit()}};
+$('#oPrev').onclick=()=>{const p=localStorage.getItem('naol3d_prev');if(!p)return toast('Project duraanii hin jiru');try{loadBlob(p)}catch(e){toast('Hin fe’amne')}};
+function loadBlob(s){const b=JSON.parse(s);playA(false);loadSnap(b.items);if(b.an){setMode(b.an.mode);an.sp=b.an.sp||1;$('#asp').value=an.sp;$('#asp').oninput({target:$('#asp')})}if(b.bg){$('#bg').value=b.bg;$('#bg').oninput({target:$('#bg')})}fitView();syncRole();commit()}
+function newProj(){try{const s=localStorage.getItem(SV);if(s)localStorage.setItem('naol3d_prev',s)}catch(e){}playA(false);clearWorld();setMode('none');refresh();commit();$('[data-t=tpl]').click()}
+$('#hN').onclick=()=>{if(confirm('Project haaraa jalqabnaa? (kan ammaa “Project duraanii” keessatti olkaa’ama)'))newProj()};
+/* init */
+(()=>{let s=null;try{s=localStorage.getItem(SV)}catch(e){}resize();
+ let n=0;try{n=JSON.parse(JSON.parse(s).items).length}catch(e){}
+ if(n>2){$('#m2t').textContent='Project keessan qaama '+n+' qabu argameera. Itti fufuu moo haaraa jalqabuu barbaaddaa?';$('#m2').style.display='flex';
+  $('#m2r').onclick=()=>{$('#m2').style.display='none';try{loadBlob(s)}catch(e){loadT(0)}};$('#m2n').onclick=()=>{$('#m2').style.display='none';newProj()}}
+ else{T[0][3]().forEach(addItem);setMode('drive');refresh();fitView();commit();syncRole()}
+ requestAnimationFrame(frame)})();
+})();
+</script></body></html>
